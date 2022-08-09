@@ -1,6 +1,8 @@
 //---------- 105th Standard Template Options ----------
 
-_useAssetMarkers = true;
+_enableAssetMarkers = true;
+
+_enableDynamicGroups = true;
 
 //---------- 105th Standard Template Code ----------
 
@@ -11,7 +13,7 @@ _useAssetMarkers = true;
 [] execVM "missionScripts\taskMonitor.sqf";
 
 // Asset Markers
-if (_useAssetMarkers) then {
+if (_enableAssetMarkers) then {
 	[] call SOC_fnc_assetMarkers;
 };
 
@@ -19,4 +21,6 @@ if (_useAssetMarkers) then {
 addMissionEventHandler ['HandleDisconnect',{deleteVehicle (_this select 0);}];
 
 // Dynamic Groups Init
+if (_enableDynamicGroups) then {
 ["Initialize", [true]] call BIS_fnc_dynamicGroups;
+};

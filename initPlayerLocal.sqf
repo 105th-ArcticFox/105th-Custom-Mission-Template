@@ -7,8 +7,6 @@ _enableViewDistance = true;
 
 _enableTeleportToSL = true;
 
-_enableDynamicGroups = false;
-
 //---------- 105th Standard Template Code ----------
 #include "MissionScripts\Parameters.sqf";
 
@@ -99,7 +97,6 @@ if (_enableTeleportToSL) then {[] spawn SOC_fnc_teleportToSL;};
 
 
 // Initialize Dynamic Groups
-if (_enableDynamicGroups) then {
-	["InitializePlayer", [player, true]] call BIS_fnc_dynamicGroups;
-	[player, ""] call BIS_fnc_setUnitInsignia;
-};
+["InitializePlayer", [player, true]] call BIS_fnc_dynamicGroups;
+[player, ""] call BIS_fnc_setUnitInsignia;
+
