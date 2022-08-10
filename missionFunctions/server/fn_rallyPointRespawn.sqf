@@ -80,7 +80,7 @@ do {
 				false,  
 				false] call BIS_fnc_holdActionAdd;
 				
-				_this setVariable ["actionID", rallyPointActionID, true];
+				_this setVariable ["rallyPointActID", rallyPointActionID, true];
 				
 			}
 		] remoteExec ["call", _rallyPointGroupLeader];
@@ -95,6 +95,6 @@ do {
 	_availableRallyPoints = availableRallyPoints;
 	
 	//systemChat "remove RP action from leader if available RPs is 0 or new leader assigned";
-	[_rallyPointGroupLeader, _rallyPointGroupLeader getVariable "actionID"] remoteExec ["BIS_fnc_holdActionRemove", _rallyPointGroupLeader];
+	[_rallyPointGroupLeader, _rallyPointGroupLeader getVariable "rallyPointActID"] remoteExec ["BIS_fnc_holdActionRemove", _rallyPointGroupLeader];
 	
 	};
