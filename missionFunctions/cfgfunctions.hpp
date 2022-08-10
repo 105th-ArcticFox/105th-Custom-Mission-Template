@@ -12,9 +12,9 @@ class SOC
 	{
 		file = "missionFunctions\server";
 		class assetMarkers {};
-		//class rallyPointRespawn {};
-		//class abortMission {};
-		//class sleepingBagRespawn {};
+		class rallyPointRespawn {};
+		class abortMission {};
+		class sleepingBagRespawn {};
 	};
 };
 
