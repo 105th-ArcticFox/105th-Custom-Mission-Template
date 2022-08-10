@@ -7,7 +7,7 @@ _enableDynamicGroups = true;
 //---------- 105th Standard Template Code ----------
 
 // AI Settings
-[] execVM "missionScripts\aiSettings.sqf";
+[East] execVM "missionScripts\aiSettings.sqf";
 
 // Task Monitor
 [] execVM "missionScripts\taskMonitor.sqf";
@@ -23,4 +23,8 @@ addMissionEventHandler ['HandleDisconnect',{deleteVehicle (_this select 0);}];
 // Dynamic Groups Init
 if (_enableDynamicGroups) then {
 ["Initialize", [true]] call BIS_fnc_dynamicGroups;
+
+["InitializePlayer", [player, true]] remoteExecCall ["BIS_fnc_dynamicGroups" , 0, true];
+
+[player, ""] remoteExecCall ["BIS_fnc_setUnitInsignia", 0, true];
 };

@@ -4,68 +4,68 @@ enableDebugConsole = 1;
 
 #include "CHVD\dialog.hpp"
 
-class CfgFunctions {
+class CfgFunctions 	{
 						#include "missionFunctions\cfgfunctions.hpp"	
 						#include "CHVD\CfgFunctions.hpp"
 					};
-					
-class Extended_Init_EventHandlers {
-    class ACE_bodyBagObject {
-        class weirdCarry {
-            init = "[(_this select 0), true, [0,1,1], 90] call ace_dragging_fnc_setCarryable;";
-        };
-    };
-};
-					
-					
+										
 class CfgDebriefing
+
 {  
 	class End1
-	{
-		title = "Mission Complete";
-		subtitle = "All objectives completed.";
-	};
+	
+		{
+			title = "Mission Complete";
+			subtitle = "All objectives completed.";
+		};
 	
 	class End2
-	{
-		title = "Partial Mission Success";
-		subtitle = "Some objectives were not completed.";
-	};
+	
+		{
+			title = "Partial Mission Success";
+			subtitle = "Some objectives were not completed.";
+		};
 
 	class End3
-	{
-		title = "Mission Scrubbed";
-		subtitle = "Mission aborted.";
-	};
+	
+		{
+			title = "Mission Scrubbed";
+			subtitle = "Mission aborted.";
+		};
 	
 	class End4
-	{
-		title = "Mission Failed";
-		subtitle = "All Units K.I.A.";
-	};
+	
+		{
+			title = "Mission Failed";
+			subtitle = "All Units K.I.A.";
+		};
 };
 
 class Params
+
 {
 
 	class Daytime
-	{
-	title = "Time of Day";
-	texts[] = {"Dawn","Day","Dusk","Mid-Night"};
-	values[] = {05,15,18,00};
-	default = 05;
-	function = "BIS_fnc_paramDaytime";
-	isGlobal = 1;
-	};
 	
-	#define WEATHER_DEFAULT 25
-    #include "\a3\functions_f\Params\paramWeather.hpp"
+		{
+			title = "Time of Day";
+			texts[] = {"Dawn","Day","Dusk","Mid-Night"};
+			values[] = {05,15,18,00};
+			default = 05;
+			function = "BIS_fnc_paramDaytime";
+			isGlobal = 1;
+		};
 
 	class BlueForceTracker
+	
     	{
-        title = "Blue Force Tracker";
-        values[] = {0,1,2};
-        texts[] = {"Disabled","Group Leader","All Units"};
-        default = 0;
+			title = "Blue Force Tracker";
+			values[] = {0,1,2};
+			texts[] = {"Disabled","Group Leader","All Units"};
+			default = 0;
     	};
+		
+	#define WEATHER_DEFAULT 25
+    #include "\a3\functions_f\Params\paramWeather.hpp"
+	
 };

@@ -95,8 +95,3 @@ if (_enableViewDistance) then {
 // Teleport To Squad Leader
 if (_enableTeleportToSL) then {[] spawn SOC_fnc_teleportToSL;};
 
-
-// Initialize Dynamic Groups
-["InitializePlayer", [player, true]] call BIS_fnc_dynamicGroups;
-[player, ""] call BIS_fnc_setUnitInsignia;
-

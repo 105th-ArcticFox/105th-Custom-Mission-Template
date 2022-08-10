@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=129;
+	toggles=1;
 	mods[]=
 	{
 		"3denEnhanced"
@@ -24,10 +24,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={1893.3967,49.137157,5696.9946};
-		dir[]={-0.30786604,-0.46530104,0.829898};
-		up[]={-0.16183697,0.88514972,0.43625569};
-		aside[]={0.93757558,-1.4295802e-007,0.34781218};
+		pos[]={1872.8943,16.669661,5776.4609};
+		dir[]={0.4865056,-0.38802716,-0.78279597};
+		up[]={0.20482701,0.92164177,-0.32957095};
+		aside[]={-0.84934467,-5.1292591e-007,-0.52786249};
 	};
 };
 binarizationWanted=0;
@@ -438,7 +438,7 @@ randomSeed=7214977;
 class ScenarioData
 {
 	author="|105th| ArcticFox";
-	overviewText="[105th SOC Custom Mission Template (NO TASKS) v1.0][20 APR 2022]";
+	overviewText="[105th SOC Custom Mission Template v1.1][09 AUG 2022]";
 	onLoadMission="Loading screen mission discription.";
 	loadScreen="images\105th_Load_Wood_COOP_New.jpg";
 	saving=0;
@@ -68890,7 +68890,7 @@ class Mission
 					flags=7;
 					class Attributes
 					{
-						init="[this, ""Adam Spiegelman""] RemoteExec [""setName"", 0];" \n "" \n "AbortMission = [OFFICER,            " \n """<t color='#FF0000'>ABORT MISSION</t>"",             " \n """\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa"",           " \n """\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa"",            " \n """Leader playerGroup_1 distance _target < 5 || Leader playerGroup_2 distance _target < 5 || Leader playerGroup_3 distance _target < 5 || Leader playerGroup_4 distance _target < 5 || Leader playerGroup_5 distance _target < 5"",            " \n """Leader playerGroup_1 distance _target < 5 || Leader playerGroup_2 distance _target < 5 || Leader playerGroup_3 distance _target < 5 || Leader playerGroup_4 distance _target < 5 || Leader playerGroup_5 distance _target < 5"" ,            " \n "{cutText [""Aborting Mission."",""PLAIN"",1]},            " \n "{},            " \n "{    " \n "[[],""MissionScripts\cancelMission.sqf""] remoteExec [""execVM"",2,false];    " \n "},            " \n "{},            " \n "[],            " \n "3,           " \n "0,            " \n "true,            " \n "false] call BIS_fnc_holdActionAdd;";
+						init="[this, ""Adam Spiegelman""] RemoteExec [""setName"", 0];" \n "" \n "[this] spawn SOC_fnc_abortMission;";
 						name="OFFICER";
 						stance="Up";
 						class Inventory
@@ -69220,7 +69220,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				init="call {  " \n " " \n """MRK_8"" SetMarkerPos GetPos this; " \n " " \n " " \n "[SleepingBagTeleportMap,              " \n """<t size='1.25' color='#0047AB'>Open Sleeping Bag Teleport Map</t>"",             " \n """\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\map_ca.paa"",   " \n """\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\map_ca.paa"",    " \n """_this distance _target < 5"",         " \n """_caller distance _target < 5"",         " \n "{},                " \n "{},                " \n "{  " \n "[] spawn {  " \n "   ActiveSBObj = allMissionObjects ""Respawn_Sleeping_bag_F"";   " \n "    " \n "   Sleep 2; " \n "    " \n "   if (Count ActiveSBObj < 1) Then {Hint ""No Sleeping Bags Deployed""} Else {   " \n "                      openMap true;   " \n "                      onMapSingleClick {};   " \n "                      onMapSingleClick {  " \n "                           RefPos = _Pos;  " \n "                           _sortedByRange = [ActiveSBObj,[],{_RefPos distance _x},""ASCEND""] call BIS_fnc_sortBy;  " \n "                           _sortedByRange params [""_nearestSB""];  " \n "                              " \n "                            If (_pos distance _nearestSB < 50) Then {Player SetPos GetPos _nearestSB; openMap false; onMapSingleClick {};}   " \n "                              " \n "                            Else {Hint ""No sleeping bags deployed at this location. Try again.""; openMap false; onMapSingleClick {};};  " \n "                          };  " \n "                     };  " \n "  };   " \n "},       " \n "{},                " \n "[],                " \n "1,                " \n "0,                " \n "false,               " \n "false               " \n "] call BIS_fnc_holdActionAdd;  " \n "};";
+				init="""MRK_8"" SetMarkerPos GetPos this;" \n "" \n "[this] spawn SOC_fnc_sleepingBagRespawn;";
 				name="SleepingBagTeleportMap";
 				disableSimulation=1;
 			};
@@ -69461,13 +69461,12 @@ class Mission
 			dataType="Comment";
 			class PositionInfo
 			{
-				position[]={1884.302,5.6290002,5743.7061};
+				position[]={1885.1017,5.6254277,5742.5347};
 				angles[]={6.278194,0,0.0024897563};
 			};
 			title="105th RALLY-POINT SYSTEM";
 			description="- The 105th Rally-Point system allows group leaders to place a limited number of rally-points during the mission. Players who respawn will be moved to the most current rally-point." \n "" \n "- Set the number of Rally-Points avaible in the inti.sqf in the main mission folder" \n "" \n "- To disable the Rally-Point system delete the RallyPointSystemInit game logic" \n "" \n "- IT IS NOT RECOMENDED TO USE THE SLEEPING BAG REDEPLOY SYSTEM IF THE RALLY-POINT SYSTEM IS IN USE";
 			id=695;
-			atlOffset=-0.00028514862;
 		};
 		class Item41
 		{
