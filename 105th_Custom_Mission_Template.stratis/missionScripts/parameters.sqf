@@ -1,0 +1,1 @@
+BlueForceTracker = "BlueForceTracker" call BIS_fnc_getParamValue;
