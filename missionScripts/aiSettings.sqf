@@ -2,26 +2,33 @@
 	Author: |105th| ArcticFox
 
 	Description:
-		Adds a hold action to the groups leader allowing him to move the respawn position marker to their position a set number of times throughout the mission. 
+		Applies skill settings or any desired code on all or some OPFOR units. Editor placed units can be given user defined specific variable traits to apply code only on certain units.  
+		
+		place in unit init: this setVariable ["myUnitVariable", true];
 
 	Parameter(s):
-		NONE
+		0: SIDE - OPFOR side in mission.
 
 	Returns:
 		NOTHING
 
 	Example:
-		execute on server or HC only. [] execVM "missionScripts\aiSettings.sqf";
+		execute on server or HC only. [East] execVM "missionScripts\aiSettings.sqf";
 */
 
+params [
+		["_opforSide","East"]
+		];
 
-_UnitsOPFOR = [];
+_unitsOPFOR = [];
 
-{if ((side _x) == East) then {_UnitsOPFOR pushBack _x}} forEach allUnits;
+{if ((side _x) == _opforSide) then {_unitsOPFOR pushBack _x}} forEach allUnits;
 
 //////////////////////////////////////////////////
 			
 {
+	//----------Global OPFOR AI Skill Settings----------\\
+	
 	if (isNil {_x getVariable "ManualSkill"}) 
 
 	then {
@@ -37,9 +44,22 @@ _UnitsOPFOR = [];
 			_x setSkill ["reloadSpeed",    0.400];
 			_x allowFleeing 0.25;
 
+		}
+
+	//---------- myUnitVariable	----------\\
+	/*	
+	if (_x getVariable "myUnitVariable" == true) 
+
+	then {
+	
+			_x setSkill ["spotDistance",   1.00];
+			_x disableAI "PATH";
+			_x dowatch (_x getRelPos [25,360]);
+			
 		} 
-					
-} forEach _UnitsOPFOR;	
+	*/
+	
+} forEach _unitsOPFOR;	
 
 //////////////////////////////////////////////////
 			
