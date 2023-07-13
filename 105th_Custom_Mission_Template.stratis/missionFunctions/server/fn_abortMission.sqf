@@ -5,234 +5,130 @@
 		Adds a hold action to the current group leader when near the respawn point or on object at base allowing the group leader to abort the mission.
 
 	Parameter(s):
-		0: MARKER or OBJECT - (default "respawn_west" marker) Note: Group param required if marker is used.
+		0: MARKER or OBJECT - (default "respawn_west" marker) Note: Group param required if marker is used or object not defined.
 		1: GROUP - Group which will have the abort action available. Note: only group leader will have action.
+		2: STRING - End class name from CfgDebriefing.
+		3: CODE - (Optional) Custom code executed during the abort action.
 
 	Returns:
 		NOTHING
 
 	Example:
-		Call on server only. ["respawn_west", playerGroup_1] spawn SOC_fnc_abortMission;
+		["respawn_west", playerGroup_1, "end3", {}] spawn SOC_fnc_abortMission;
 */
 
+if (!isServer) exitWith {};
+
 params [
-		["_abortLocation", "respawn_west"],
-		["_abortGroup", nil]
+		["_abortLocation", "respawn_west", ["", objNull]],
+		["_abortGroup", nil, [grpNull]],
+		["_endName","end1", [""]],
+		["_customCode",{},[{}]]
 		];
 
-
-
-if (typeName _abortLocation isNotEqualTo "OBJECT") 
-
-	then 	{	
-				_missionIncomplete = true;
-	
-				waitUntil {sleep 10; leader _abortGroup distance getMarkerPos _abortLocation > 25};
-				
-				while {_missionIncomplete} 
-
-				do {
-						_abortGroupLeader = leader _abortGroup;
-	
-						if (!alive _abortGroupLeader) then {waitUntil {sleep 1; isNull _abortGroupLeader}; _abortGroupLeader = leader _abortGroup;};
-						
-						waitUntil {sleep 1; _abortGroupLeader distance getMarkerPos _abortLocation < 25};
-						
-						[_abortGroupLeader, 
-		
-							{	
-			
-								abortActionID = [_this,
-								"<t color='#FF0000'>ABORT MISSION</t>", 
-								"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa",           
-								"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa", 
-								"_this == _target",  
-								"true",  
-								{
-									"abortText" cutText ["Aborting Mission.","PLAIN",1]
-								},  
-								{},  
-								{
-									[["The mission is ending.","PLAIN DOWN",1]] remoteExec ["titleText",0,false];
-
-									sleep 5;
-
-									["End3"] remoteExec ["BIS_fnc_endMission", 0, true];
-								},
-								{
-									"abortText" cutFadeOut 0;
-								},  
-								[],  
-								5,  
-								0,  
-								true,  
-								false] call BIS_fnc_holdActionAdd;
-				
-								_this setVariable ["abortActID", abortActionID, true];
-				
-							}
-						] remoteExec ["call", _abortGroupLeader];
-				
-						waitUntil {sleep 1; _abortGroupLeader distance getMarkerPos _abortLocation > 25 || _abortGroupLeader isNotEqualTo leader _abortGroup || !alive _abortGroupLeader || !_missionIncomplete};
-						
-						[_abortGroupLeader, _abortGroupLeader getVariable "abortActID"] remoteExec ["BIS_fnc_holdActionRemove", _abortGroupLeader];
-			
-					};
-			}
-			
-	else 	{
-				
-				if (!isNil "_abortGroup") then {actionTarget = "leader _abortGroup distance _target < 5"} else {actionTarget = "_this distance _target < 5"};
-				
-				[_abortLocation,            
-				"<t color='#FF0000'>ABORT MISSION</t>",             
-				"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa",           
-				"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa",            
-				actionTarget,  
-				actionTarget,             
-				{
-					"abortText" cutText ["Aborting Mission.","PLAIN",1]
-				},            
-				{},            
-				{    
-					[["The mission is ending.","PLAIN DOWN",1]] remoteExec ["titleText",0,false];
-
-					sleep 5;
-
-					["End3"] remoteExec ["BIS_fnc_endMission", 0, true];
-				},            
-				{
-					"abortText" cutFadeOut 0;
-				},            
-				[],            
-				3,           
-				0,            
-				true,            
-				false] remoteExec ["BIS_fnc_holdActionAdd", 0, true];
-				
-			};
-							
-							
-							
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-_groupVarName  = _this select 0;
-
-waitUntil {sleep 10; leader _groupVarName distance getMarkerPos "respawn_west" > 25};
-
-//systemChat "Mission Abort Monitor Start";
-
-missionIncomplete = true;
-
-while {missionIncomplete}
+switch (true) 
 
 	do {
-			
-			//systemChat "Check leader distance";
-			
-			if ((leader _groupVarName distance getMarkerPos "respawn_west" < 25) && alive leader _groupVarName)
-			
-			then {
-					
-					if (player != leader _groupVarName) then {[player, AbortMission] remoteExecCall ["BIS_fnc_holdActionRemove", 0]};
-					
-					sleep 1;
-			
-					AbortMission = [leader _groupVarName,            
-					"<t color='#FF0000'>ABORT MISSION</t>",             
-					"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa",           
-					"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa",            
-					"_this == _target",  
-					"true",             
-					{"abortText" cutText ["Aborting Mission.","PLAIN",1]},            
-					{},            
-					{    
-						[["The mission is ending.","PLAIN DOWN",1]] remoteExec ["titleText",0,false];
+			case (_abortLocation in allMapMarkers): {
+														_missionIncomplete = true;
 
-						sleep 5;
+														while {_missionIncomplete} 
 
-						["End2"] remoteExec ["BIS_fnc_endMission", 0, true];
-					},            
-					{
-					"abortText" cutFadeOut 0;
-					},            
-					[],            
-					3,           
-					0,            
-					true,            
-					false] call BIS_fnc_holdActionAdd;
-					
-					sleep 1;
-					
-					waitUntil {sleep 10; (leader _groupVarName distance getMarkerPos "respawn_west" > 25) || player != leader _groupVarName || !alive player};
-					
-					sleep 1;
-					
-					[player, AbortMission] remoteExecCall ["BIS_fnc_holdActionRemove", 0]; 
-					
-				};
+														do {
+																_abortGroupLeader = leader _abortGroup;
+																
+																systemChat str _abortGroupLeader;
+											
+																//if (!alive _abortGroupLeader) then {waitUntil {sleep 1; isNull _abortGroupLeader}; _abortGroupLeader = leader _abortGroup;};
+																
+																waitUntil {sleep 1; leader _abortGroup distance getMarkerPos _abortLocation < 25};
+																
+																systemChat "ADD ABORT ACTION";
+																
+																[[_abortGroupLeader, _endName, _customCode], 
+												
+																	{	
+													
+																		params ["_abortGroupLeader", "_endName", "_customCode"];
+																		
+																		abortActionID = [_abortGroupLeader,
+																		"<t color='#FF0000'>ABORT MISSION</t>", 
+																		"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa",           
+																		"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa", 
+																		"_this isEqualTo _target",  
+																		"true",  
+																		{
+																			"abortText" cutText ["Aborting Mission.","PLAIN",1]
+																		},  
+																		{},  
+																		{
+																			
+																			[["The mission is ending.","PLAIN DOWN",1]] remoteExec ["titleText",0,false];
+																			
+																			sleep 0.5;
+																			
+																			[] spawn _a1;
+
+																			sleep 5;
+
+																			[_a0] remoteExec ["BIS_fnc_endMission", 0, true];
+																		},
+																		{
+																			"abortText" cutFadeOut 0;
+																		},  
+																		[_endName, _customCode],  
+																		5,  
+																		0,  
+																		true,  
+																		false] call BIS_fnc_holdActionAdd;
+														
+																		_abortGroupLeader setVariable ["abortActID", abortActionID, true];
+														
+																	}
+																] remoteExec ["call", _abortGroupLeader];
+														
+																waitUntil {sleep 1; _abortGroupLeader distance getMarkerPos _abortLocation > 25 || _abortGroupLeader isNotEqualTo leader _abortGroup || !alive _abortGroupLeader || !_missionIncomplete};
+																
+																systemChat "RESTART ABORT LOOP";
+																
+																[_abortGroupLeader, _abortGroupLeader getVariable "abortActID"] remoteExec ["BIS_fnc_holdActionRemove", _abortGroupLeader];
+													
+															};
+													};
+																	
+			case (typeName _abortLocation isEqualTo "OBJECT"): 	{
+				
+																	[_abortLocation,            
+																	"<t color='#FF0000'>ABORT MISSION</t>",             
+																	"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa",           
+																	"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa",            
+																	"leader group _this isEqualTo _this && _this distance _target < 5",  
+																	"leader group _caller isEqualTo _caller && _caller distance _target < 5",             
+																	{
+																		"abortText" cutText ["Aborting Mission.","PLAIN",1]
+																	},            
+																	{},            
+																	{    
+																		
+																		[["The mission is ending.","PLAIN DOWN",1]] remoteExec ["titleText",0,false];
+																		
+																		sleep 0.5;
+																						
+																		[] spawn _a1;
+
+																		sleep 5;
+
+																		[_a0] remoteExec ["BIS_fnc_endMission", 0, true];
+																	},            
+																	{
+																		"abortText" cutFadeOut 0;
+																	},            
+																	[_endName, _customCode],            
+																	3,           
+																	0,            
+																	true,            
+																	false] remoteExec ["BIS_fnc_holdActionAdd", 0, true];
+																};
 			
-		sleep 10;	
-			
+			default {systemChat "ABORT LOCATION INVALID. END FUNCTION."};
 		};
