@@ -5,9 +5,9 @@ enableDebugConsole = 1;
 #include "CHVD\dialog.hpp"
 
 class CfgFunctions 	{
-				#include "missionFunctions\cfgfunctions.hpp"	
-				#include "CHVD\CfgFunctions.hpp"
-			};
+						#include "missionFunctions\cfgfunctions.hpp"	
+						#include "CHVD\CfgFunctions.hpp"
+					};
 										
 class CfgDebriefing
 
@@ -58,14 +58,14 @@ class Params
 
 	class BlueForceTracker
 	
-    		{
+    	{
 			title = "Blue Force Tracker";
 			values[] = {0,1,2};
 			texts[] = {"Disabled","Group Leader","All Units"};
 			default = 0;
-    		};
+    	};
 		
 	#define WEATHER_DEFAULT 25
-   	#include "\a3\functions_f\Params\paramWeather.hpp"
+    #include "\a3\functions_f\Params\paramWeather.hpp"
 	
 };
