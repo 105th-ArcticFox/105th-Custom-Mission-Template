@@ -2,7 +2,7 @@
 	Author: |105th| ArcticFox
 
 	Description:
-		 
+		 Adds the ability for players to deploy a green camp sleeping bag as a forward mobile respawn point in a mission.
 
 	Parameter(s):
 		0: OBJECT - Object with the sleeping bag deploy option.
@@ -17,15 +17,17 @@
 		1: If the player which placed the sleeping bag disconnects the sleeping bag will be removed per the BIS camp bag logic. 
 		
 	Known Issues:
-		1: The respawn marker will remain on the map. Future versions may look at removing the respawn marker on player disconnect. 
+		1: The respawn marker will remain on the map after player disconnect. Future versions may look at removing the respawn marker on player disconnect. 
 */
 
 if (isDedicated) exitWith {};
 
 if (isnil "DeplyedSB") then {DeplyedSB = []};
 
-player addEventHandler ["WeaponAssembled", {
-												if ( typeOf (_this select 1) == "Respawn_Sleeping_bag_F") 
+_player = player;
+
+_player addEventHandler ["WeaponAssembled", {
+												if ( typeOf (_this select 1) isEqualTo "Respawn_Sleeping_bag_F") 
 														
 														then {  
      
@@ -52,13 +54,13 @@ player addEventHandler ["WeaponAssembled", {
 						];
  
  
-player addEventHandler ["WeaponDisassembled", {
-												if (typeOf (_this select 1) == "B_Respawn_Sleeping_bag_F") 
+_player addEventHandler ["WeaponDisassembled", {
+												if (typeOf (_this select 1) isEqualTo "B_Respawn_Sleeping_bag_F") 
 															
 													then {
 
 
-															_SortedSBMarkerArr = [DeplyedSB, [], {player distanceSqr getMarkerPos _x}, "ASCEND"] call BIS_fnc_sortBy;
+															_SortedSBMarkerArr = [DeplyedSB, [], {_this select 0 distanceSqr getMarkerPos _x}, "ASCEND"] call BIS_fnc_sortBy;
 
 															_SortedSBMarkerArr params ["_nearestSBMarker"];
 
@@ -72,16 +74,15 @@ player addEventHandler ["WeaponDisassembled", {
 						];
 						
 						
-player addEventHandler ["Respawn", {player setPos getMarkerPos "respawn_west";}];
+_player addEventHandler ["Respawn", {_this select 0 setPos getMarkerPos "respawn_west";}];
 
-
-params ["_sleepingBagTeleportMap"];
+params [["_sleepingBagTeleportMap", nil, [objNull]]]; 
 
 while {true} 
 
 do {
 	
-		waitUntil {sleep 1; player distance _sleepingBagTeleportMap < 5};
+		waitUntil {sleep 1; _player distance _sleepingBagTeleportMap < 5};
 		
 			//systemChat "Action Added";
 
@@ -103,17 +104,17 @@ do {
 									Else {
 											openMap true;
 											onMapSingleClick {};
-											[_sleepingBagTeleportMap] onMapSingleClick {
+											[_sleepingBagTeleportMap, _caller] onMapSingleClick {
 											
-																							params ["_sleepingBagTeleportMap"];
+																							params ["_sleepingBagTeleportMap", "_caller"];
 																		
-																							player setPos getPos (nearestObjects [_pos, ["Respawn_Sleeping_bag_F"], 50] select 0);
+																							_caller setPos getPos (nearestObjects [_pos, ["Respawn_Sleeping_bag_F"], 50] select 0);
 																							
 																							openMap false; 
 																							
 																							onMapSingleClick {};
 																							
-																							if (player distance _sleepingBagTeleportMap < 5) then {Hint "No sleeping bags deployed at this location. Try again."};
+																							if (_caller distance _sleepingBagTeleportMap < 5) then {Hint "No sleeping bags deployed at this location. Try again."};
 																						};
 										};
 									},       
@@ -127,11 +128,11 @@ do {
 									
 			//systemChat str _sleepingBagActionID;
 			
-		waitUntil {sleep 1; player distance _sleepingBagTeleportMap > 5};
+		waitUntil {sleep 1; _player distance _sleepingBagTeleportMap > 5};
 		
-									//systemChat "Action Removed";
-		
-									[_sleepingBagTeleportMap, _sleepingBagActionID] call BIS_fnc_holdActionRemove;
+		//systemChat "Action Removed";
+
+		[_sleepingBagTeleportMap, _sleepingBagActionID] call BIS_fnc_holdActionRemove;
 		
 	};
 
