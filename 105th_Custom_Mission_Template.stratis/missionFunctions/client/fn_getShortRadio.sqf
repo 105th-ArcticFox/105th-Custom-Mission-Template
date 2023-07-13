@@ -1,7 +1,24 @@
-_caller = player;
+/*
+	Author: |105th| ArcticFox
 
-_srRadio = "TFAR_anprc152"; //default radio
+	Description:
+		 Assigns player new short range radio.
 
-_caller linkItem _srRadio;
+	Parameter(s):
+		0: OBJECT - Player to receive new radio.
+		1: STRING - Radio classname to be assigned.
+	Returns:
+		NOTHING
 
-systemChat "You have been assigned an AN/PRC-152 radio.";
+	Example:
+		[_player, "TFAR_anprc152"] call SOC_fnc_getShortRadio;
+*/
+
+params [
+			["_player", player, [objNull]],
+			["_srRadio", "TFAR_anprc152", [""]]
+	   ];
+
+_player linkItem _srRadio;
+
+systemChat format ["You have been assigned a: %1", _srRadio];
