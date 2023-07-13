@@ -6,6 +6,9 @@ class SOC
 		file = "missionFunctions\client";				
 		class getShortRadio {};
 		class teleportToSL {};
+		class sleepingBagRespawn {};
+		class briefing {};
+		class camoFace {};
 	};
 	
 	class server
@@ -14,7 +17,7 @@ class SOC
 		class assetMarkers {};
 		class rallyPointRespawn {};
 		class abortMission {};
-		class sleepingBagRespawn {};
+		class aiSettings {};
 	};
 };
 
