@@ -22,20 +22,6 @@ if ("BlueForceTracker" call BIS_fnc_getParamValue isEqualTo 0) then {_player set
 if ("BlueForceTracker" call BIS_fnc_getParamValue isEqualTo 1) then {ace_map_BFT_Show_playerNames = false;};
 
 //Dead _player Body Removal
-/* _player addEventHandler 
-    [ 
-        "Killed", 
-        { 
-            params ["_body"]; 
- 
-            _null = [_body] spawn 
-								{ 
-									waitUntil {alive player}; 
-									_body = select 0; 
-									deleteVehicle _body; 
-								} 
-        } 
-    ]; */
 
 _player addEventHandler 
     [ 
