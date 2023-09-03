@@ -48,7 +48,7 @@ missionNamespace setVariable ["deployedRespawnBags", [], true];
 											
 				params ["_sleepingBagTeleportMap", "_caller"];
 																		
-				_caller setPosWorld getPosWorld (_pos nearEntities ["Respawn_Sleeping_bag_F", 50] select 0);  
+				_caller setPosWorld getPosWorld ((_pos nearObjects ["Respawn_Sleeping_bag_F", 50]) select 0);   
 																						
 				openMap false; 
 																							
@@ -79,8 +79,10 @@ missionNamespace setVariable ["deployedRespawnBags", [], true];
 
 [
 	player, {
+	
+	_player = _this;
 
-	_this addEventHandler ["WeaponAssembled", {
+	_player addEventHandler ["WeaponAssembled", {
 	
 		params ["_unit", "_deployedBag"];
 												
@@ -107,7 +109,7 @@ missionNamespace setVariable ["deployedRespawnBags", [], true];
 		}];
 		
 		
-	_this addEventHandler ["WeaponDisassembled", {
+	_player addEventHandler ["WeaponDisassembled", {
 												
 		params ["_unit", "_packedBag"];
 		
@@ -127,7 +129,7 @@ missionNamespace setVariable ["deployedRespawnBags", [], true];
 			
 		}];
 
-	_this addEventHandler ["Respawn", {_this select 0 setPos getMarkerPos "respawn_west";}];
+	_player addEventHandler ["Respawn", {_this select 0 setPos getMarkerPos "respawn_west";}];
 	
 	}
 
