@@ -43,8 +43,8 @@ _player addEventHandler
 
 
 //View Distance Action
-CHVD_maxView = 2000; // Set maximum view distance (default: 12000)
-CHVD_maxObj = 2000; // Set maximum object view distance (default: 12000)
+CHVD_maxView = 12000; // Set maximum view distance (default: 12000)
+CHVD_maxObj = 12000; // Set maximum object view distance (default: 12000)
 
 //Init Mission Briefing
 _null = [] call SOC_fnc_briefing;

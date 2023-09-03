@@ -2,7 +2,7 @@
 	Author: |105th| ArcticFox
 
 	Description:
-		 
+		 Adds the ability for players to deploy a green camp sleeping bag as a forward mobile respawn point in a mission.
 
 	Parameter(s):
 		0: OBJECT - Object with the sleeping bag deploy option.
@@ -11,105 +11,124 @@
 		NOTHING
 
 	Example:
-		Call on server only. [sleepingBagMap] spawn SOC_fnc_sleepingBagRespawn;
+		[sleepingBagMap] spawn SOC_fnc_sleepingBagRespawn;
 		
-	Known Issues: 
-		1: If the player which placed the sleeping bag disconnects the sleeping bag will be removed per the BIS camp bag logic. The respawn marker will remain on the map. Future versions may look at removing the respawn marker on player disconnect. 
+	Known Limitations: 
+		1: If the player which placed the sleeping bag disconnects the sleeping bag will be removed per the BIS camp bag logic. 
+		
+	Known Issues:
+		1: The respawn marker will remain on the map after player disconnect. Future versions may look at removing the respawn marker on player disconnect. 
 */
 
-params [
-		"_sleepingBagTeleportMap"
-		];
+if (!isServer) exitWith {};
 
+params [["_sleepingBagTeleportMap", objNull, [objNull]]];
 
-[_sleepingBagTeleportMap,              
-"<t size='1.25' color='#0047AB'>Open Sleeping Bag Teleport Map</t>",             
-"\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\map_ca.paa",   
-"\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\map_ca.paa",    
-"_this distance _target < 5",         
-"_caller distance _target < 5",         
-{},                
-{},                
-{
-	call {
+missionNamespace setVariable ["deployedRespawnBags", [], true];
 
-			ActiveSBObj = allMissionObjects "Respawn_Sleeping_bag_F";   
-    
-			Sleep 1; 
-    
-			if (Count ActiveSBObj < 1) 
+[
+	_sleepingBagTeleportMap,              
+	"<t size='1.25' color='#0047AB'>Open Sleeping Bag Teleport Map</t>",             
+	"\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\map_ca.paa",   
+	"\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\map_ca.paa",    
+	"_this distance _target < 5",         
+	"_caller distance _target < 5",         
+	{},                
+	{},                
+	{
+		params ["_sleepingBagTeleportMap"];
+		
+		if (missionNamespace getVariable ["deployedRespawnBags", []] isNotEqualTo []) Then {
+		
+			openMap true;
 			
-			Then {Hint "No Sleeping Bags Deployed"} 
+			onMapSingleClick {};
 			
-			Else {
-					openMap true;
-					onMapSingleClick {};
-					onMapSingleClick {  
-										RefPos = _Pos;  
-										_sortedByRange = [ActiveSBObj,[],{RefPos distance _x},"ASCEND"] call BIS_fnc_sortBy;  
-										_sortedByRange params ["_nearestSB"];  
-                              
-										If (_pos distance _nearestSB < 50) 
-										
-										Then {Player SetPos GetPos _nearestSB; openMap false; onMapSingleClick {};}   
-                              
-										Else {Hint "No sleeping bags deployed at this location. Try again."; openMap false; onMapSingleClick {};};  
-									};  
-                     };  
-		};
-},       
-{},                
-[],                
-1,                
-0,                
-false,               
-false               
-] remoteExec ["BIS_fnc_holdActionAdd",0,true];
+			[_sleepingBagTeleportMap, _caller] onMapSingleClick {
+											
+				params ["_sleepingBagTeleportMap", "_caller"];
+																		
+				_caller setPosWorld getPosWorld (_pos nearEntities ["Respawn_Sleeping_bag_F", 50] select 0);  
+																						
+				openMap false; 
+																							
+				onMapSingleClick {};
+																							
+				if (_caller distance _sleepingBagTeleportMap <= 5) then {Hint "No sleeping bags deployed at this location. Try again."};
+																						
+				};
+		
+		
+			} else {
+			
+				Hint "No Sleeping Bags Deployed";
+			
+				};
+
+	},       
+	{},                
+	[_sleepingBagTeleportMap],                
+	1,                
+	0,                
+	false,               
+	false               
+	
+	] remoteExec ["BIS_fnc_holdActionAdd",0,true];
+	
 
 
-//---------- Sleeping Bag Spawn Player Event Handlers ----------
+[
+	player, {
 
+	_this addEventHandler ["WeaponAssembled", {
+	
+		params ["_unit", "_deployedBag"];
+												
+		if (typeOf _deployedBag isEqualTo "Respawn_Sleeping_bag_F") then {  
+			   
+			private _mkrSB = createMarker [str (_deployedBag), _deployedBag];     
+						   
+			_mkrSB setMarkerType "respawn_inf";  
+			  
+			_mkrSB setMarkerColor "colorBLUFOR"; 
+			 
+			private _gridPos = mapGridPosition _deployedBag; 
+			 
+			_mkrSB setMarkerText _gridPos;
+			
+			private _allDeployedSB = missionNamespace getVariable ["deployedRespawnBags", []];
+			
+			_allDeployedSB pushBack _mkrSB;
+			
+			missionNamespace setVariable ["deployedRespawnBags", _allDeployedSB, true];
+			
+			};
+			
+		}];
+		
+		
+	_this addEventHandler ["WeaponDisassembled", {
+												
+		params ["_unit", "_packedBag"];
+		
+		if (typeOf _packedBag isEqualTo "B_Respawn_Sleeping_bag_F") then {
+		
+			private _allDeployedSB = missionNamespace getVariable ["deployedRespawnBags", []];
+		
+			private _nearestSBMarker = ([_allDeployedSB, [], {_unit distance getMarkerPos _x}, "ASCEND"] call BIS_fnc_sortBy) select 0;
+			
+			deleteMarker _nearestSBMarker;
+			
+			_allDeployedSB deleteAt (_allDeployedSB find _nearestSBMarker);
+			
+			missionNamespace setVariable ["deployedRespawnBags", _allDeployedSB, true];
+		
+			};
+			
+		}];
 
-[player, ["WeaponAssembled", {if ( typeOf (_this select 1) == "Respawn_Sleeping_bag_F") then {  
-     
-_name = [_this select 1] call BIS_fnc_objectVar; 
-   
-createMarker [_name, _this select 1];     
-               
-_name setMarkerType "respawn_inf";  
-  
-_name setMarkerColor "colorBLUFOR"; 
- 
-_VarNameSB  = call compile _name; 
- 
-_GridPos = mapGridPosition _VarNameSB; 
- 
-_name setMarkerText _GridPos; 
-  
-DeplyedSB pushBack _name;  
-  
-publicVariable "DeplyedSB";  
-   
-}}]] remoteExec ["addEventHandler", 0, true];
- 
- 
- 
-[player,  ["WeaponDisassembled", {if (TypeOf (_this select 1) in ["B_Respawn_Sleeping_bag_F"]) then {
+	_this addEventHandler ["Respawn", {_this select 0 setPos getMarkerPos "respawn_west";}];
+	
+	}
 
-
-_SortedSBMarkerArr = [DeplyedSB, [], {player distanceSqr getMarkerPos _x}, "ASCEND"] call BIS_fnc_sortBy;
-
-_SortedSBMarkerArr params ["_nearestSBMarker"];
-
-//systemChat Str (_SortedSBMarkerArr);
-
-//systemChat Str (_nearestSBMarker);
-
-deleteMarker _nearestSBMarker;
-
-DeplyedSB = DeplyedSB - [_SortedSBMarkerArr Select 0]; 
-
-publicVariable "DeplyedSB";
- 
-}}]] remoteExec ["addEventHandler", 0, true];
-
+] remoteExec ["call", 0, true];
